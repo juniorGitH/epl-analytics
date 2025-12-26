@@ -33,13 +33,9 @@ def load_data(uploaded_file):
         return None
 
     expected_columns = [
-        "student_id",
-        "departement_code",
-        "departement_nom",
-        "ue_code",
-        "ue_nom",
-        "note",
-        "enseignants"
+        "student_id", "nom", "prénom", "date_de_naissance", "sex",
+        "annee_academique", "departement_code", "departement_nom",
+        "matiere", "ue_code", "ue_nom", "note", "enseignants"
     ]
 
     if not all(col in df.columns for col in expected_columns):

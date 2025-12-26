@@ -82,3 +82,55 @@ def calculate_teacher_stats(df):
     teacher_stats = calculate_stats_by_group(exploded_df, group_by_col='enseignants')
 
     return teacher_stats
+
+def rank_students(df, group_by_col):
+    """
+    Classe les étudiants en fonction de leur note au sein de chaque groupe.
+
+    Args:
+        df (pd.DataFrame): Le DataFrame avec les données de notes.
+        group_by_col (str): La colonne à utiliser pour le groupement (ex: 'ue_nom', 'matiere').
+
+    Returns:
+        pd.DataFrame: Le DataFrame avec une colonne 'classement'.
+    """
+    if df is None or df.empty:
+        return pd.DataFrame()
+
+    df['classement'] = df.groupby(group_by_col)['note'].rank(method='dense', ascending=False)
+    return df.sort_values(by=[group_by_col, 'classement'])
+
+def get_admitted_students(df):
+    """
+    Retourne la liste des étudiants admis, avec leur moyenne générale.
+
+    Un étudiant est considéré comme admis si sa moyenne générale est >= 10.
+    """
+    if df is None or df.empty:
+        return pd.DataFrame()
+
+    student_avg = df.groupby(['student_id', 'nom', 'prénom'])['note'].mean().reset_index()
+    admis = student_avg[student_avg['note'] >= 10].copy()
+    admis.rename(columns={'note': 'moyenne_generale'}, inplace=True)
+    admis['moyenne_generale'] = admis['moyenne_generale'].round(2)
+    return admis.sort_values(by='moyenne_generale', ascending=False)
+
+def rank_teachers(df, rank_by='Moyenne'):
+    """
+    Classe les enseignants en fonction d'une métrique de performance.
+
+    Args:
+        df (pd.DataFrame): Le DataFrame avec les données de notes.
+        rank_by (str): La colonne à utiliser pour le classement ('Moyenne' or 'Taux de Réussite (%)').
+
+    Returns:
+        pd.DataFrame: Un DataFrame classé des statistiques des enseignants.
+    """
+    if df is None or df.empty:
+        return pd.DataFrame()
+
+    teacher_stats = calculate_teacher_stats(df)
+    if rank_by not in teacher_stats.columns:
+        raise ValueError(f"La colonne de classement '{rank_by}' n'existe pas dans les statistiques des enseignants.")
+
+    return teacher_stats.sort_values(by=rank_by, ascending=False)

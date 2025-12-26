@@ -28,7 +28,7 @@ def main():
             st.header("2. Niveau d'Analyse")
             analysis_level = st.selectbox(
                 "Choisir le niveau d'analyse :",
-                ["Vue d'ensemble", "Par Département", "Par UE (Unité d'Enseignement)", "Par Enseignant"]
+                ["Vue d'ensemble", "Par Département", "Par Matière", "Par UE (Unité d'Enseignement)", "Par Enseignant"]
             )
 
     # --- Panneau principal pour afficher les données et les graphiques ---
@@ -44,6 +44,7 @@ def main():
         
         # Créer des colonnes pour les filtres
         col1, col2 = st.columns(2)
+        col3, col4 = st.columns(2)
         
         # Filtre par département
         departments = df['departement_nom'].unique()
@@ -56,8 +57,20 @@ def main():
         ues = filtered_df['ue_nom'].unique()
         selected_ue = col2.multiselect("Filtrer par UE:", options=ues, default=ues)
 
+        # Filtre par matière
+        matieres = filtered_df['matiere'].unique()
+        selected_matiere = col3.multiselect("Filtrer par Matière:", options=matieres, default=matieres)
+
+        # Filtre par sexe
+        sexes = filtered_df['sex'].unique()
+        selected_sex = col4.multiselect("Filtrer par Sexe:", options=sexes, default=sexes)
+
         # DataFrame final filtré
-        final_df = filtered_df[filtered_df['ue_nom'].isin(selected_ue)]
+        final_df = filtered_df[
+            (filtered_df['ue_nom'].isin(selected_ue)) &
+            (filtered_df['matiere'].isin(selected_matiere)) &
+            (filtered_df['sex'].isin(selected_sex))
+        ]
         
         st.dataframe(final_df.head(10))
         st.write(f"Affichage de {final_df.shape[0]} lignes sur {df.shape[0]} au total.")
@@ -83,6 +96,22 @@ def main():
             col2.pyplot(fig2)
             
             fig3 = visualization.plot_grade_boxplot(final_df, x_col='departement_nom', title="Distribution des notes par département")
+            st.pyplot(fig3)
+
+        elif analysis_level == "Par Matière":
+            st.header("📖 Analyse par Matière")
+            stats_df = analysis.calculate_stats_by_group(final_df, 'matiere')
+
+            st.subheader("Statistiques descriptives par matière")
+            st.dataframe(stats_df)
+
+            col1, col2 = st.columns(2)
+            fig1 = visualization.plot_stats_comparison(stats_df, x_col='matiere', y_col='Moyenne', title="Moyenne des notes par matière")
+            col1.pyplot(fig1)
+            fig2 = visualization.plot_stats_comparison(stats_df, x_col='matiere', y_col='Taux de Réussite (%)', title="Taux de réussite par matière")
+            col2.pyplot(fig2)
+
+            fig3 = visualization.plot_grade_boxplot(final_df, x_col='matiere', title="Distribution des notes par matière")
             st.pyplot(fig3)
 
         elif analysis_level == "Par UE (Unité d'Enseignement)":
