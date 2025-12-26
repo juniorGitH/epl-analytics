@@ -42,8 +42,8 @@ Si vous prévoyez de contribuer au projet ou de modifier le code, suivez ces ét
     Cette commande installe le package `epl_analytics` en "mode éditable", ce qui signifie que toutes les modifications que vous apportez au code source seront immédiatement disponibles lorsque vous utiliserez l'outil.
 
     ```bash
-    pip install -e .
-    ```
+pip install -e .
+```
 
     Cette commande installe toutes les bibliothèques nécessaires, y compris Streamlit, Pandas, Typer, et Matplotlib.
 
@@ -95,12 +95,12 @@ Calcule les statistiques en groupant les données par une colonne. L'option `--g
 
 *   **Exemple :** Analyser les notes par département.
     ```bash
-    epl-analytics calculer-stats-par-groupe data/notes_epl_simulees.csv --grouper-par departement_nom
-    ```
+epl-analytics calculer-stats-par-groupe data/notes_epl_simulees.csv --grouper-par departement_nom
+```
 *   **Exemple :** Analyser par UE et sauvegarder les résultats dans un fichier Excel.
     ```bash
-    epl-analytics calculer-stats-par-groupe data/notes_epl_simulees.csv -g ue_nom -s stats_par_ue.xlsx
-    ```
+epl-analytics calculer-stats-par-groupe data/notes_epl_simulees.csv -g ue_nom -s stats_par_ue.xlsx
+```
 
 **`calculer-stats-enseignants`**
 
@@ -108,12 +108,12 @@ Calcule les statistiques pour chaque enseignant.
 
 *   **Exemple :**
     ```bash
-    epl-analytics calculer-stats-enseignants data/notes_epl_simulees.csv
-    ```
+epl-analytics calculer-stats-enseignants data/notes_epl_simulees.csv
+```
 *   **Exemple :** Sauvegarder les résultats dans un fichier CSV.
     ```bash
-    epl-analytics calculer-stats-enseignants data/notes_epl_simulees.csv -s stats_enseignants.csv
-    ```
+epl-analytics calculer-stats-enseignants data/notes_epl_simulees.csv -s stats_enseignants.csv
+```
 
 ---
 
@@ -125,8 +125,8 @@ Génère un histogramme de la distribution de toutes les notes. L'option `--sort
 
 *   **Exemple :**
     ```bash
-    epl-analytics tracer-distribution-notes data/notes_epl_simulees.csv --sortie distribution_globale.png
-    ```
+epl-analytics tracer-distribution-notes data/notes_epl_simulees.csv --sortie distribution_globale.png
+```
 
 **`tracer-boxplot-notes`**
 
@@ -134,8 +134,8 @@ Génère un boxplot des notes groupées par une colonne. Les options `--colonne-
 
 *   **Exemple :** Créer un boxplot des notes par département.
     ```bash
-    epl-analytics tracer-boxplot-notes data/notes_epl_simulees.csv --colonne-x departement_nom --sortie boxplot_par_dept.png
-    ```
+epl-analytics tracer-boxplot-notes data/notes_epl_simulees.csv --colonne-x departement_nom --sortie boxplot_par_dept.png
+```
 
 ### 3. Utilisation en tant que Bibliothèque Python
 
@@ -209,3 +209,57 @@ Si vous n'avez pas de fichier de notes, vous pouvez en générer un facilement.
     ```
 
 3.  Un fichier `notes_epl_simulees.csv` sera créé dans le dossier `data/`, prêt à être utilisé.
+
+## 🏛️ Architecture du Code
+
+Ce projet est conçu selon une architecture modulaire qui sépare clairement la logique métier (analyse, visualisation) des couches de présentation (CLI, tableau de bord).
+
+### Structure du Projet
+
+*   `src/epl_analytics/`: Contient le code source principal de la bibliothèque.
+    *   `core.py`: Définit la classe centrale `EPLAnalytics`.
+    *   `analysis.py`: Contient les fonctions pour l'analyse statistique.
+    *   `visualization.py`: Regroupe les fonctions de création de graphiques.
+    *   `data_loader.py`: Gère le chargement et la validation des données pour le tableau de bord.
+    *   `exporter.py`: Fonctions pour exporter les données (CSV, Excel).
+    *   `cli.py`: Implémente l'interface en ligne de commande.
+    *   `dashboard.py`: Code de l'application Streamlit.
+*   `scripts/`: Scripts utilitaires, comme la génération de données.
+*   `pyproject.toml`: Fichier de configuration du projet et de ses dépendances.
+*   `README.md`: Cette documentation.
+
+### Composants Principaux
+
+1.  **`core.py` et la classe `EPLAnalytics`**
+    *   C'est le cœur de la bibliothèque. La classe `EPLAnalytics` agit comme un conteneur pour le `DataFrame` pandas, mais elle pourrait être étendue pour ajouter des méthodes ou des propriétés spécifiques au domaine.
+    *   Elle offre des méthodes pratiques, comme `from_csv`, pour charger les données de manière standardisée.
+
+2.  **Modules Fonctionnels (`analysis.py`, `visualization.py`)**
+    *   Ces modules sont conçus pour être "purs". Ils contiennent des fonctions qui prennent un `DataFrame` en entrée et retournent un résultat (un `DataFrame` de statistiques ou une `Figure` Matplotlib).
+    *   Ils ne dépendent pas de la manière dont les données sont chargées ou affichées, ce qui les rend réutilisables et faciles à tester.
+
+3.  **Couches de Présentation (`cli.py`, `dashboard.py`)**
+    *   **`cli.py`**: Utilise la bibliothèque `Typer` pour créer une interface en ligne de commande. Il analyse les arguments de l'utilisateur, charge les données dans un `DataFrame`, appelle les fonctions des modules `analysis` et `visualization`, puis formate la sortie pour le terminal (tableaux `rich`, sauvegarde de fichiers).
+    *   **`dashboard.py`**: Utilise `Streamlit` pour créer une interface web interactive. Il utilise le module `data_loader` pour gérer le téléversement de fichiers, puis passe le `DataFrame` aux mêmes fonctions d'analyse et de visualisation pour afficher les résultats de manière dynamique. Le module `exporter` est utilisé pour les fonctionnalités de téléchargement.
+
+### Diagramme Simplifié des Interactions
+
+```
+            +---------------------------+
+            |   scripts/ (ex: generate) |
+            +-------------+-------------+
+                          |
+                          v
++----------------+      +------------------+      +-------------------+
+|   cli.py       |----->|                  |<-----|   dashboard.py    |
+| (Typer CLI)    |      |  Bibliothèque    |      | (Streamlit App)   |
++----------------+      |                  |      +---------+---------+
+       |                |   - analysis.py  |                |
+       +--------------->|   - viz.py       |<---------------+ 
+                        |   - core.py      |
+                        |   - exporter.py  |
+                        |   - data_loader.py|
+                        +------------------+
+```
+
+Cette architecture découplée permet d'ajouter facilement de nouvelles fonctionnalités d'analyse ou de créer de nouvelles interfaces (par exemple, une API REST) sans modifier la logique existante.
