@@ -1,7 +1,7 @@
 # scripts/1_generate_dataset.py
 """
-Generates a simulated dataset of student grades for EPL and saves it to a CSV file.
-The dataset includes complex scenarios like multiple teachers for a single course unit (UE).
+Génère un jeu de données simulé de notes d'étudiants pour l'EPL et l'enregistre dans un fichier CSV.
+Le jeu de données inclut des scénarios complexes comme plusieurs enseignants pour une seule unité d'enseignement (UE).
 """
 import pandas as pd
 import numpy as np
@@ -14,7 +14,7 @@ ACADEMIC_YEAR = "2024-2025"
 OUTPUT_DIR = "data"
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "notes_epl_simulees.csv")
 
-# --- Data Definitions ---
+# --- Définitions des données ---
 DEPARTMENTS = {
     "INFO": "Informatique",
     "MECA": "Mécanique",
@@ -55,34 +55,34 @@ UES = {
 }
 
 def generate_teachers():
-    """Assigns one or two teachers to each UE."""
+    """Assigne un ou deux enseignants à chaque UE."""
     ue_teachers = {}
     for dept_ues in UES.values():
         for ue_code, _ in dept_ues:
             num_teachers = random.choices([1, 2], weights=[0.7, 0.3], k=1)[0]
             assigned_teachers = random.sample(TEACHERS, k=num_teachers)
-            ue_teachers[ue_code] = ";".join(assigned_teachers) # Use a separator for multi-teacher UEs
+            ue_teachers[ue_code] = ";".join(assigned_teachers) # Utiliser un séparateur pour les UE à plusieurs enseignants
     return ue_teachers
 
 def generate_dataset(ue_teachers):
-    """Generates the full dataset."""
-    print("Generating dataset...")
+    """Génère l'ensemble complet des données."""
+    print("Génération du jeu de données...")
     data = []
     student_ids = [f"etu_{2024000 + i}" for i in range(NUM_STUDENTS)]
 
     for student_id in student_ids:
-        # Assign a random department to each student
+        # Assigner un département aléatoire à chaque étudiant
         student_dept_code = random.choice(list(DEPARTMENTS.keys()))
 
-        # Each student takes all UEs from their department
+        # Chaque étudiant suit toutes les UE de son département
         for ue_code, ue_name in UES[student_dept_code]:
-            # Simulate a realistic grade distribution (mean around 12, std dev around 3)
-            # Add some randomness to the mean for each UE
+            # Simuler une distribution de notes réaliste (moyenne autour de 12, écart-type autour de 3)
+            # Ajouter un peu d'aléatoire à la moyenne pour chaque UE
             base_mean = random.uniform(9, 14)
             note = np.random.normal(loc=base_mean, scale=3.5)
-            note = np.clip(round(note, 2), 0, 20) # Clip notes to be between 0 and 20
+            note = np.clip(round(note, 2), 0, 20) # Limiter les notes entre 0 et 20
 
-            # 10% chance of being absent (NaN grade)
+            # 10% de chance d'être absent (note NaN)
             if random.random() < 0.1:
                 note = np.nan
 
@@ -97,29 +97,29 @@ def generate_dataset(ue_teachers):
                 "enseignants": ue_teachers.get(ue_code, "")
             })
 
-    print(f"Generated {len(data)} records.")
+    print(f"Généré {len(data)} enregistrements.")
     return pd.DataFrame(data)
 
 def main():
-    """Main function to run the script."""
-    print("--- Starting Data Simulation Script ---")
+    """Fonction principale pour exécuter le script."""
+    print("--- Début du script de simulation de données ---")
     
-    # Ensure output directory exists
+    # S'assurer que le répertoire de sortie existe
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
-        print(f"Created directory: {OUTPUT_DIR}")
+        print(f"Répertoire créé : {OUTPUT_DIR}")
 
-    # Generate and save the dataset
+    # Générer et enregistrer le jeu de données
     ue_teachers_mapping = generate_teachers()
     df = generate_dataset(ue_teachers_mapping)
 
     try:
         df.to_csv(OUTPUT_FILE, index=False, sep=';', decimal=',')
-        print(f"Successfully saved dataset to: {OUTPUT_FILE}")
+        print(f"Jeu de données enregistré avec succès dans : {OUTPUT_FILE}")
     except IOError as e:
-        print(f"Error saving file: {e}")
+        print(f"Erreur lors de l'enregistrement du fichier : {e}")
 
-    print("--- Data Simulation Script Finished ---")
+    print("--- Fin du script de simulation de données ---")
 
 if __name__ == "__main__":
     main()

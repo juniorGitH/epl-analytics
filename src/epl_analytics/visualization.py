@@ -1,53 +1,53 @@
 # src/epl_analytics/visualization.py
 
 """
-Module for creating visualizations of the analyzed grade data.
+Module pour créer des visualisations des données de notes analysées.
 """
 
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-# --- Seaborn Style Configuration ---
+# --- Configuration du style Seaborn ---
 sns.set_theme(style="whitegrid")
 
-def plot_grade_distribution(df, title="Distribution of Grades"):
+def plot_grade_distribution(df, title="Distribution des Notes"):
     """
-    Plots a histogram of the grade distribution.
+    Trace un histogramme de la distribution des notes.
 
     Args:
-        df (pd.DataFrame): DataFrame containing the 'note' column.
-        title (str): The title for the plot.
+        df (pd.DataFrame): DataFrame contenant la colonne 'note'.
+        title (str): Le titre du graphique.
 
     Returns:
-        matplotlib.figure.Figure: The figure object for the plot.
+        matplotlib.figure.Figure: L'objet figure pour le graphique.
     """
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.histplot(df['note'].dropna(), bins=20, kde=True, ax=ax)
     
     ax.set_title(title, fontsize=16)
     ax.set_xlabel("Note / 20", fontsize=12)
-    ax.set_ylabel("Number of Students", fontsize=12)
+    ax.set_ylabel("Nombre d'étudiants", fontsize=12)
     ax.set_xlim(0, 20)
     
     return fig
 
 def plot_stats_comparison(stats_df, x_col, y_col, title):
     """
-    Creates a bar chart to compare a statistic across different groups.
+    Crée un diagramme à barres pour comparer une statistique entre différents groupes.
 
     Args:
-        stats_df (pd.DataFrame): DataFrame containing calculated statistics.
-        x_col (str): The column to use for the x-axis (e.g., 'ue_code').
-        y_col (str): The column to use for the y-axis (e.g., 'Moyenne').
-        title (str): The title for the plot.
+        stats_df (pd.DataFrame): DataFrame contenant les statistiques calculées.
+        x_col (str): La colonne à utiliser pour l'axe des x (par exemple, 'ue_code').
+        y_col (str): La colonne à utiliser pour l'axe des y (par exemple, 'Moyenne').
+        title (str): Le titre du graphique.
 
     Returns:
-        matplotlib.figure.Figure: The figure object for the plot.
+        matplotlib.figure.Figure: L'objet figure pour le graphique.
     """
     if stats_df.empty:
         fig, ax = plt.subplots()
-        ax.text(0.5, 0.5, "No data to display.", ha='center', va='center')
+        ax.text(0.5, 0.5, "Aucune donnée à afficher.", ha='center', va='center')
         return fig
 
     fig, ax = plt.subplots(figsize=(12, 7))
@@ -57,9 +57,9 @@ def plot_stats_comparison(stats_df, x_col, y_col, title):
     ax.set_xlabel("")
     ax.set_ylabel(y_col, fontsize=12)
     plt.xticks(rotation=45, ha='right')
-    plt.tight_layout() # Adjust layout to make room for rotated labels
+    plt.tight_layout() # Ajuster la mise en page pour laisser de la place aux étiquettes pivotées
 
-    # Add labels on top of bars
+    # Ajouter des étiquettes au-dessus des barres
     for container in ax.containers:
         ax.bar_label(container, fmt='%.2f', fontsize=10)
 
@@ -67,19 +67,19 @@ def plot_stats_comparison(stats_df, x_col, y_col, title):
 
 def plot_grade_boxplot(df, x_col, title):
     """
-    Creates a boxplot to visualize grade distributions across different groups.
+    Crée un boxplot pour visualiser les distributions de notes entre différents groupes.
 
     Args:
-        df (pd.DataFrame): The DataFrame with raw grade data.
-        x_col (str): The column to group by on the x-axis (e.g., 'ue_code').
-        title (str): The title for the plot.
+        df (pd.DataFrame): Le DataFrame avec les données de notes brutes.
+        x_col (str): La colonne à grouper sur l'axe des x (par exemple, 'ue_code').
+        title (str): Le titre du graphique.
 
     Returns:
-        matplotlib.figure.Figure: The figure object for the plot.
+        matplotlib.figure.Figure: L'objet figure pour le graphique.
     """
     if df.empty:
         fig, ax = plt.subplots()
-        ax.text(0.5, 0.5, "No data to display.", ha='center', va='center')
+        ax.text(0.5, 0.5, "Aucune donnée à afficher.", ha='center', va='center')
         return fig
         
     fig, ax = plt.subplots(figsize=(12, 7))

@@ -1,7 +1,7 @@
 # src/epl_analytics/exporter.py
 
 """
-Module for exporting dataframes to various formats, optimized for Streamlit.
+Module pour exporter les DataFrames vers différents formats, optimisé pour Streamlit.
 """
 
 import pandas as pd
@@ -9,32 +9,32 @@ from io import BytesIO
 
 def convert_df_to_csv_bytes(df):
     """
-    Converts a DataFrame to a CSV stored in a bytes object.
+    Convertit un DataFrame en CSV stocké dans un objet bytes.
 
-    This is the preferred format for Streamlit's st.download_button.
+    C'est le format préféré pour le bouton de téléchargement (st.download_button) de Streamlit.
 
     Args:
-        df (pd.DataFrame): The DataFrame to convert.
+        df (pd.DataFrame): Le DataFrame à convertir.
 
     Returns:
-        bytes: The CSV data as a bytes object.
+        bytes: Les données CSV sous forme d'objet bytes.
     """
     if df is None or df.empty:
         return b""
 
-    # Use a standard, portable encoding
+    # Utiliser un encodage standard et portable
     return df.to_csv(index=False, sep=';', decimal=',').encode('utf-8')
 
 def convert_df_to_excel_bytes(df):
     """
-    Converts a DataFrame to an Excel file stored in a bytes object.
-    This is a user-friendly alternative to CSV for many users.
+    Convertit un DataFrame en un fichier Excel stocké dans un objet bytes.
+    C'est une alternative conviviale au CSV pour de nombreux utilisateurs.
 
     Args:
-        df (pd.DataFrame): The DataFrame to convert.
+        df (pd.DataFrame): Le DataFrame à convertir.
 
     Returns:
-        bytes: The Excel data as a bytes object.
+        bytes: Les données Excel sous forme d'objet bytes.
     """
     if df is None or df.empty:
         return b""
@@ -43,6 +43,6 @@ def convert_df_to_excel_bytes(df):
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False, sheet_name='Export')
     
-    # Get the bytes from the BytesIO object
+    # Obtenir les octets de l'objet BytesIO
     processed_data = output.getvalue()
     return processed_data

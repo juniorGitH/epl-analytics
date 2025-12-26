@@ -1,7 +1,7 @@
 # src/epl_analytics/data_loader.py
 
 """
-Module for loading and validating EPL student grade data.
+Module pour charger et valider les données de notes des étudiants de l'EPL.
 """
 
 import pandas as pd
@@ -12,16 +12,16 @@ from .core import EPLAnalytics
 @st.cache_data
 def load_data(uploaded_file):
     """
-    Loads student grade data from a CSV file and returns an EPLAnalytics object.
+    Charge les données de notes des étudiants à partir d'un fichier CSV et retourne un objet EPLAnalytics.
 
-    This function is designed to work with Streamlit's file uploader.
-    It reads the data, performs validation, and returns an EPLAnalytics object.
+    Cette fonction est conçue pour fonctionner avec l'outil de téléchargement de fichiers de Streamlit.
+    Elle lit les données, effectue la validation et retourne un objet EPLAnalytics.
 
     Args:
-        uploaded_file: A file-like object from st.file_uploader.
+        uploaded_file: Un objet de type fichier de st.file_uploader.
 
     Returns:
-        EPLAnalytics: An object containing the validated data, or None if validation fails.
+        EPLAnalytics: Un objet contenant les données validées, ou None si la validation échoue.
     """
     if uploaded_file is None:
         return None
@@ -29,7 +29,7 @@ def load_data(uploaded_file):
     try:
         df = pd.read_csv(uploaded_file, sep=';', decimal=',')
     except Exception as e:
-        st.error(f"Error reading the CSV file: {e}")
+        st.error(f"Erreur de lecture du fichier CSV: {e}")
         return None
 
     expected_columns = [
@@ -44,12 +44,12 @@ def load_data(uploaded_file):
 
     if not all(col in df.columns for col in expected_columns):
         st.error(
-            "The uploaded file is missing one or more expected columns. "
-            f"Required columns: {', '.join(expected_columns)}"
+            "Le fichier téléversé ne contient pas toutes les colonnes attendues. "
+            f"Colonnes requises : {', '.join(expected_columns)}"
         )
         return None
 
     df['note'] = pd.to_numeric(df['note'], errors='coerce')
 
-    st.success("Data loaded and validated successfully!")
+    st.success("Données chargées et validées avec succès !")
     return EPLAnalytics(df)

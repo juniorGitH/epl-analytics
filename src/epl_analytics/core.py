@@ -1,20 +1,20 @@
 # src/epl_analytics/core.py
 
 """
-Core functionality for the epl_analytics package.
+Fonctionnalité principale du package epl_analytics.
 """
 
 import pandas as pd
 
 class EPLAnalytics:
     """
-    Main class for EPL Analytics.
+    Classe principale pour EPL Analytics.
 
-    This class holds the grades data and provides methods for analysis.
+    Cette classe contient les données de notes et fournit des méthodes d'analyse.
     """
     def __init__(self, data):
         if not isinstance(data, pd.DataFrame):
-            raise TypeError("data must be a pandas DataFrame")
+            raise TypeError("Les données doivent être un DataFrame pandas")
         self.data = data
 
     def __repr__(self):
@@ -22,35 +22,35 @@ class EPLAnalytics:
 
     def _repr_html_(self):
         """
-        HTML representation for Jupyter Notebooks.
+        Représentation HTML pour les notebooks Jupyter.
         """
-        # Display the head of the dataframe
-        html = "<h3>EPL Analytics Data</h3>"
+        # Affiche l'en-tête du DataFrame
+        html = "<h3>Données EPL Analytics</h3>"
         html += self.data.head().to_html()
         return html
 
     @staticmethod
     def from_csv(file_path, sep=';', decimal=','):
         """
-        Loads data from a CSV file.
+        Charge les données à partir d'un fichier CSV.
 
         Args:
-            file_path (str): The path to the CSV file.
-            sep (str): The separator for the CSV file.
-            decimal (str): The decimal character for the CSV file.
+            file_path (str): Le chemin vers le fichier CSV.
+            sep (str): Le séparateur pour le fichier CSV.
+            decimal (str): Le caractère décimal pour le fichier CSV.
 
         Returns:
-            EPLAnalytics: An instance of the EPLAnalytics class.
+            EPLAnalytics: Une instance de la classe EPLAnalytics.
         """
         try:
             df = pd.read_csv(file_path, sep=sep, decimal=decimal)
-            # --- Data Cleaning ---
-            # Ensure 'note' is a numeric type, coercing errors to NaN
+            # --- Nettoyage des données ---
+            # Assurez-vous que 'note' est un type numérique, en convertissant les erreurs en NaN
             df['note'] = pd.to_numeric(df['note'], errors='coerce')
             return EPLAnalytics(df)
         except FileNotFoundError:
-            print(f"Error: The file was not found at {file_path}")
+            print(f"Erreur : Le fichier n'a pas été trouvé à l'adresse {file_path}")
             return None
         except Exception as e:
-            print(f"An error occurred while reading the file: {e}")
+            print(f"Une erreur s'est produite lors de la lecture du fichier : {e}")
             return None

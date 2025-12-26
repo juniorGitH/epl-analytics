@@ -16,7 +16,23 @@ Que vous soyez un développeur souhaitant intégrer des fonctionnalités d'analy
 
 ## ⚙️ Installation
 
-Assurez-vous d'avoir Python 3.8+ installé sur votre système.
+### Depuis PyPI (Recommandé)
+
+Si vous souhaitez simplement utiliser l'outil sans modifier le code source, vous pouvez l'installer directement depuis PyPI :
+
+```bash
+pip install epl-analytics
+```
+
+Après l'installation, vous pouvez vérifier que tout fonctionne en tapant :
+
+```bash
+epl-analytics --version
+```
+
+### Depuis la source (pour les développeurs)
+
+Si vous prévoyez de contribuer au projet ou de modifier le code, suivez ces étapes :
 
 1.  **Clonez ce dépôt ou téléchargez les fichiers du projet.**
 
@@ -32,6 +48,12 @@ Assurez-vous d'avoir Python 3.8+ installé sur votre système.
     Cette commande installe toutes les bibliothèques nécessaires, y compris Streamlit, Pandas, Typer, et Matplotlib.
 
 ## 📚 Guide d'Utilisation
+
+Une fois le package installé, le moyen le plus simple de commencer est d'utiliser la commande `--help` pour voir toutes les commandes disponibles :
+
+```bash
+epl-analytics --help
+```
 
 EPL Analytics peut être utilisé de trois manières complémentaires :
 

@@ -9,9 +9,8 @@ import numpy as np
 
 def calculate_stats_by_group(df, group_by_col):
     """
-    Calcul la statistique descriptive pour les notes, groupées par une colonne spécifique.
-
-  """
+    Calcule les statistiques descriptives pour les notes, regroupées par une colonne spécifique.
+    """
     if df is None or df.empty:
         return pd.DataFrame()
 
@@ -19,14 +18,14 @@ def calculate_stats_by_group(df, group_by_col):
         ['mean', 'median', 'std', 'min', 'max', 'count']
     ).reset_index()
 
-    # Calculate success rate (grade >= 10)
+    # Calculer le taux de réussite (note >= 10)
     success_df = df[df['note'] >= 10]
     success_counts = success_df.groupby(group_by_col).size().reset_index(name='passing_grades')
 
-    # Total valid grades (not NaN)
+    # Nombre total de notes valides (non NaN)
     total_counts = df.dropna(subset=['note']).groupby(group_by_col).size().reset_index(name='total_grades')
 
-    # Merge stats
+    # Fusionner les statistiques
     stats = pd.merge(stats, total_counts, on=group_by_col, how='left')
     stats = pd.merge(stats, success_counts, on=group_by_col, how='left')
 
@@ -55,31 +54,31 @@ def calculate_stats_by_group(df, group_by_col):
 
 def calculate_teacher_stats(df):
     """
-    Calculates descriptive statistics per teacher.
+    Calcule les statistiques descriptives par enseignant.
 
-    This function handles UEs with multiple teachers by creating a separate
-    entry for each teacher.
+    Cette fonction gère les UE avec plusieurs enseignants en créant une entrée distincte
+    pour chaque enseignant.
 
     Args:
-        df (pd.DataFrame): The input DataFrame.
+        df (pd.DataFrame): Le DataFrame d'entrée.
 
     Returns:
-        pd.DataFrame: A DataFrame with statistics for each teacher.
+        pd.DataFrame: Un DataFrame avec les statistiques pour chaque enseignant.
     """
     if df is None or df.empty or 'enseignants' not in df.columns:
         return pd.DataFrame()
 
-    # Create a copy to avoid SettingWithCopyWarning
+    # Créer une copie pour éviter SettingWithCopyWarning
     df_teacher = df.dropna(subset=['enseignants', 'note']).copy()
 
-    # Split the 'enseignants' string into a list of teachers
+    # Diviser la chaîne 'enseignants' en une liste d'enseignants
     df_teacher['enseignants'] = df_teacher['enseignants'].str.split(';')
 
-    # Explode the DataFrame to have one row per teacher per student grade
+    # Déployer le DataFrame pour avoir une ligne par enseignant par note d'étudiant
     exploded_df = df_teacher.explode('enseignants')
     exploded_df['enseignants'] = exploded_df['enseignants'].str.strip()
 
-    # Now, calculate stats by teacher
+    # Maintenant, calculer les statistiques par enseignant
     teacher_stats = calculate_stats_by_group(exploded_df, group_by_col='enseignants')
 
     return teacher_stats

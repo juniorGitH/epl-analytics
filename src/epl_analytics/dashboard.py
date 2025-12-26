@@ -1,7 +1,7 @@
 # src/epl_analytics/dashboard.py
 
 """
-The main Streamlit dashboard application for EPL Analytics.
+L'application de tableau de bord Streamlit principale pour EPL Analytics.
 """
 
 import streamlit as st
@@ -9,18 +9,18 @@ import pandas as pd
 from epl_analytics import data_loader, analysis, visualization, exporter
 
 def main():
-    """The main function to run the Streamlit dashboard."""
+    """La fonction principale pour exécuter le tableau de bord Streamlit."""
     st.set_page_config(layout="wide")
     st.title(" Analyse des Notes de l'EPL")
 
-    # --- Sidebar for file upload and main controls ---
+    # --- Barre latérale pour le téléchargement de fichiers et les contrôles principaux ---
     with st.sidebar:
         st.header("1. Chargement des Données")
         uploaded_file = st.file_uploader(
             "Chargez votre fichier CSV de notes", type=["csv"]
         )
         
-        # Load data using the loader module
+        # Charger les données à l'aide du module de chargement
         epl_data = data_loader.load_data(uploaded_file)
 
         analysis_level = None
@@ -31,39 +31,39 @@ def main():
                 ["Vue d'ensemble", "Par Département", "Par UE (Unité d'Enseignement)", "Par Enseignant"]
             )
 
-    # --- Main panel for displaying data and plots ---
+    # --- Panneau principal pour afficher les données et les graphiques ---
     if epl_data is None:
         st.info("👋 Bienvenue ! Pour commencer, veuillez charger un fichier de données via le menu latéral.")
         
 
     else:
-        df = epl_data.data  # Extract the DataFrame from our object
+        df = epl_data.data  # Extraire le DataFrame de notre objet
         
-        # --- Display filtered data ---
+        # --- Afficher les données filtrées ---
         st.header("Filtres des données")
         
-        # Create columns for filters
+        # Créer des colonnes pour les filtres
         col1, col2 = st.columns(2)
         
-        # Department filter
+        # Filtre par département
         departments = df['departement_nom'].unique()
         selected_dept = col1.multiselect("Filtrer par Département:", options=departments, default=departments)
         
-        # Filter dataframe based on selected departments
+        # Filtrer le DataFrame en fonction des départements sélectionnés
         filtered_df = df[df['departement_nom'].isin(selected_dept)]
         
-        # UE filter (updates based on department selection)
+        # Filtre UE (se met à jour en fonction de la sélection du département)
         ues = filtered_df['ue_nom'].unique()
         selected_ue = col2.multiselect("Filtrer par UE:", options=ues, default=ues)
 
-        # Final filtered dataframe
+        # DataFrame final filtré
         final_df = filtered_df[filtered_df['ue_nom'].isin(selected_ue)]
         
         st.dataframe(final_df.head(10))
         st.write(f"Affichage de {final_df.shape[0]} lignes sur {df.shape[0]} au total.")
         st.write("---")
 
-        # --- Perform and display analysis based on selection ---
+        # --- Effectuer et afficher l'analyse en fonction de la sélection ---
         if analysis_level == "Vue d'ensemble":
             st.header("📈 Vue d'ensemble des Notes")
             fig = visualization.plot_grade_distribution(final_df, "Distribution de toutes les notes filtrées")
@@ -92,7 +92,7 @@ def main():
             st.subheader("Statistiques descriptives par UE")
             st.dataframe(stats_df)
             
-            # Download button for UE stats
+            # Bouton de téléchargement pour les statistiques des UE
             csv_bytes = exporter.convert_df_to_csv_bytes(stats_df)
             st.download_button(
                 label="📥 Télécharger les stats des UE (CSV)",
@@ -117,7 +117,7 @@ def main():
             st.subheader("Statistiques descriptives par Enseignant")
             st.dataframe(stats_df)
 
-            # Download button for teacher stats
+            # Bouton de téléchargement pour les statistiques des enseignants
             csv_bytes = exporter.convert_df_to_csv_bytes(stats_df)
             st.download_button(
                 label="📥 Télécharger les stats des enseignants (CSV)",
