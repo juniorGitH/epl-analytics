@@ -29,6 +29,12 @@ Après l'installation, vous pouvez vérifier que tout fonctionne en tapant :
 ```bash
 epl-analytics --version
 ```
+Vous aurez un guide d'utilisation en tapant :
+
+```bash
+epl-analytics --help
+```
+
 
 ### Depuis la source (pour les développeurs)
 
@@ -41,7 +47,7 @@ Si vous prévoyez de contribuer au projet ou de modifier le code, suivez ces ét
 3.  **Installez le package et ses dépendances.**
     Cette commande installe le package `epl_analytics` en "mode éditable", ce qui signifie que toutes les modifications que vous apportez au code source seront immédiatement disponibles lorsque vous utiliserez l'outil.
 
-    ```bash
+```bash
 pip install -e .
 ```
 
@@ -94,11 +100,11 @@ Pour obtenir de l'aide sur une commande, utilisez `--help`.
 Calcule les statistiques en groupant les données par une colonne. L'option `--grouper-par` est **obligatoire**.
 
 *   **Exemple :** Analyser les notes par département.
-    ```bash
+```bash
 epl-analytics calculer-stats-par-groupe data/notes_epl_simulees.csv --grouper-par departement_nom
 ```
 *   **Exemple :** Analyser par UE et sauvegarder les résultats dans un fichier Excel.
-    ```bash
+```bash
 epl-analytics calculer-stats-par-groupe data/notes_epl_simulees.csv -g ue_nom -s stats_par_ue.xlsx
 ```
 
@@ -107,11 +113,11 @@ epl-analytics calculer-stats-par-groupe data/notes_epl_simulees.csv -g ue_nom -s
 Calcule les statistiques pour chaque enseignant.
 
 *   **Exemple :**
-    ```bash
+```bash
 epl-analytics calculer-stats-enseignants data/notes_epl_simulees.csv
 ```
 *   **Exemple :** Sauvegarder les résultats dans un fichier CSV.
-    ```bash
+```bash
 epl-analytics calculer-stats-enseignants data/notes_epl_simulees.csv -s stats_enseignants.csv
 ```
 
@@ -124,7 +130,7 @@ epl-analytics calculer-stats-enseignants data/notes_epl_simulees.csv -s stats_en
 Génère un histogramme de la distribution de toutes les notes. L'option `--sortie` est **obligatoire**.
 
 *   **Exemple :**
-    ```bash
+```bash
 epl-analytics tracer-distribution-notes data/notes_epl_simulees.csv --sortie distribution_globale.png
 ```
 
@@ -133,7 +139,7 @@ epl-analytics tracer-distribution-notes data/notes_epl_simulees.csv --sortie dis
 Génère un boxplot des notes groupées par une colonne. Les options `--colonne-x` et `--sortie` sont **obligatoires**.
 
 *   **Exemple :** Créer un boxplot des notes par département.
-    ```bash
+```bash
 epl-analytics tracer-boxplot-notes data/notes_epl_simulees.csv --colonne-x departement_nom --sortie boxplot_par_dept.png
 ```
 
